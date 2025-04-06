@@ -22,3 +22,15 @@ DATABASE_URL = f"{dialect}+{driver}://{username}:{password}@{hostname}:{port}/{d
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Create tables in the database
+def init_db():
+    Base.metadata.create_all(bind=engine)
+
+# Dependency to get DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
