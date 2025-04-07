@@ -1,0 +1,39 @@
+x-default: &default
+  environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/London
+  restart: unless-stopped
+
+services:
+  mysql-server:
+    <<: *default
+    image: mysql/mysql-server
+    container_name: mysql-server
+    env_file: "mysql.env"
+    volumes:
+      - ${CONFIG_DIR}/mysql:/config
+    ports: # expose mysql port for development
+      - 3306:3306 # comment out this line for deployment
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+    networks:
+      - coffee_network
+
+  coffee-api:
+    <<: *default
+    image: coffee-api
+    container_name: coffee-api
+    ports:
+      - "9600:9600"
+    env_file: "coffee_api/api.env"
+    networks:
+      - coffee_network
+    volumes:
+      - ${CONFIG_DIR}/coffee-api:/config
+
+networks:
+  coffee_network:
+    driver: bridge
