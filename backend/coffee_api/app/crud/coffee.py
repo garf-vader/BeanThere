@@ -17,7 +17,7 @@ def create_review(db: Session, review: CoffeeReviewCreate) -> CoffeeReview:
         tasteRating=review.tasteRating,
         price=review.price,
         notes=review.notes,
-        cafe=review.cafe, # Currently an Integer Reference to Cafe DB, might instead assign each cafe a unique code
+        cafeId=review.cafeId, # Currently an Integer Reference to Cafe DB, might instead assign each cafe a unique code
     )
     db.add(db_review)
     db.commit()
