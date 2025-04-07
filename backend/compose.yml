@@ -12,6 +12,7 @@ services:
     container_name: mysql-server
     env_file: "mysql.env"
     volumes:
+      - ${STORAGE_DIR}/coffee_db:/var/lib/mysql
       - ${CONFIG_DIR}/mysql:/config
     ports: # expose mysql port for development
       - 3306:3306 # comment out this line for deployment
