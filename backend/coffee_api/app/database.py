@@ -5,15 +5,15 @@ from sqlalchemy import create_engine
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Loads .env file into environment variables
+load_dotenv("api.env")  # Loads .env file into environment variables
 
 # Database connection details
 dialect = "mysql"
 driver = "pymysql"
 username = os.getenv("DB_USER")
 password = os.getenv("DB_PASSWORD")
-hostname = os.getenv("DB_HOST")  # fallback to localhost
-port = os.getenv("DB_PORT")           # default MySQL port
+hostname = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
 database = os.getenv("DB_NAME")
 
 # Construct the full database URL
