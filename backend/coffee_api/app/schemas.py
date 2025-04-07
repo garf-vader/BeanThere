@@ -16,7 +16,7 @@ class CoffeeReviewCreate(BaseModel):
     tasteRating: Optional[int] = None
     price: Optional[float] = None
     notes: Optional[str] = None
-    cafe: Optional[int] = None  # ID of the related cafe
+    cafeId: Optional[int] = None  # ID of the related cafe
 
     class Config:
         from_attributes = True  # Allows Pydantic to work with SQLAlchemy models
