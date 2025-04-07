@@ -11,7 +11,7 @@ class Cafe(Base):
     location: Mapped[str | None] = mapped_column(String(100), nullable=True)  # Added location
 
     # Relationship to CoffeeReview
-    reviews = relationship("CoffeeReview", back_populates="cafe_relation", lazy=True)
+    reviews = relationship("CoffeeReview", back_populates="cafe", lazy=True)
 
 class CoffeeReview(Base):
     """Represents a review of a specific coffee from a cafe."""
