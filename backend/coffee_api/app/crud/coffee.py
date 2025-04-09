@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.models import CoffeeReview
-from app.schemas import CoffeeReviewCreate
+from app.models.coffee import CoffeeReview
+from app.schemas.coffee import CoffeeReviewCreate
 from typing import Optional
 
 

@@ -7,9 +7,9 @@ from typing import Optional
 
 ####### Internal Imports
 
-from app.models import CoffeeReview
+from app.models.coffee import CoffeeReview
 from app.crud.coffee import get_review, create_review
-from app.schemas import CoffeeReviewCreate, CafeCreate
+from app.schemas.coffee import CoffeeReviewCreate
 from app.database import get_db
 
 #######
