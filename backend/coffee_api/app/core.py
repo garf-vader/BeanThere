@@ -1,10 +1,9 @@
 # app/core.py
-from fastapi import FastAPI
+import logging
+
 from app.database import init_db  # Function to initialize DB
 from app.routers import coffee  # Import routes
-
-import logging
-from fastapi import Request, status
+from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -15,6 +14,7 @@ init_db()
 
 # Include routers
 app.include_router(coffee.router)
+
 
 # Add exception handler
 @app.exception_handler(RequestValidationError)

@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 # Pydantic model for Cafe
 class CafeCreate(BaseModel):

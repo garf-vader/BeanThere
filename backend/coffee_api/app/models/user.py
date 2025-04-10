@@ -1,9 +1,11 @@
 from app.database import Base
-from sqlalchemy import Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy import Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 
 class User(Base):
     """Represents a user who submits reviews."""
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

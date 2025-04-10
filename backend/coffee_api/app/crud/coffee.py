@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.models.coffee import CoffeeReview
 from app.schemas.coffee import CoffeeReviewCreate
-from typing import Optional
+from sqlalchemy.orm import Session
 
 
 def get_review(db: Session, review_id: int):
@@ -17,7 +17,7 @@ def create_review(db: Session, review: CoffeeReviewCreate) -> CoffeeReview:
         tasteRating=review.tasteRating,
         price=review.price,
         notes=review.notes,
-        cafeId=review.cafeId, # Currently an Integer Reference to Cafe DB, might instead assign each cafe a unique code
+        cafeId=review.cafeId,  # Currently an Integer Reference to Cafe DB, might instead assign each cafe a unique code
     )
     db.add(db_review)
     db.commit()
