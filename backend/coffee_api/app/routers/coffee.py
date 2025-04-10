@@ -16,6 +16,7 @@ from app.database import get_db
 
 router = APIRouter()
 
+
 @router.post("/reviews/")
 async def create_review_endpoint(
     review: CoffeeReviewCreate,
