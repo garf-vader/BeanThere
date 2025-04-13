@@ -7,9 +7,9 @@ from typing import Optional
 
 ####### Internal Imports
 
-from app.models.cafe import Cafe
-#from app.crud.cafe import get_cafe, create_cafe
-from app.schemas.cafe import CafeCreate
+from app.models.user import User
+#from app.crud.user import get_user, create_user
+from app.schemas.user import UserCreate
 from app.database import get_db
 
 #######

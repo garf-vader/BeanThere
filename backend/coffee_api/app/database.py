@@ -1,11 +1,10 @@
 import os
 
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-load_dotenv("api.env")  # Loads .env file into environment variables
+#load_dotenv()  # Loads .env file into environment variables
 
 # Database connection details
 dialect = "mysql"

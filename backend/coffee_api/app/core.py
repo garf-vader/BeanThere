@@ -3,6 +3,8 @@ import logging
 
 from app.database import init_db  # Function to initialize DB
 from app.routers import coffee  # Import routes
+from app.routers import cafe
+from app.routers import user
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -14,6 +16,8 @@ init_db()
 
 # Include routers
 app.include_router(coffee.router)
+app.include_router(cafe.router)
+app.include_router(user.router)
 
 
 # Add exception handler

@@ -9,9 +9,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String, nullable=False)
-    email: Mapped[str] = mapped_column(String, nullable=False)
-    password: Mapped[str] = mapped_column(String, nullable=False)
+    username: Mapped[str] = mapped_column(String(32), nullable=False)
+    email: Mapped[str] = mapped_column(String(128), nullable=False)
+    password: Mapped[str] = mapped_column(String(256), nullable=False)
 
     # Relationship to CoffeeReview
     reviews = relationship("CoffeeReview", back_populates="user", lazy=True)
