@@ -1,40 +1,57 @@
+x-default_env: &default_env
+  PUID: "1000"
+  PGID: "1000"
+  TZ: "Europe/London"
+
 x-default: &default
-  environment:
-    - PUID=1000
-    - PGID=1000
-    - TZ=Europe/London
   restart: unless-stopped
 
 services:
   mysql-server:
     <<: *default
     image: mysql/mysql-server
-    container_name: mysql-server
-    env_file: "mysql.env"
+    container_name: mysql-server-${TAG}
+    environment:
+      <<: *default_env
+      MYSQL_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     volumes:
-      - ${STORAGE_DIR}/coffee_db:/var/lib/mysql
-      - ${CONFIG_DIR}/mysql:/config
+      #- ${STORAGE_DIR}/coffee_db_${TAG}:/var/lib/mysql
+      - ${CONFIG_DIR}/coffee_db_${TAG}:/config
     ports: # expose mysql port for development
-      - 3306:3306 # comment out this line for deployment
+      - ${DB_PORT}:3306 # ${DB_PORT} # comment out this line for deployment
     healthcheck:
         test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
         timeout: 20s
         retries: 10
     networks:
-      - coffee_network
+      - backend
 
   coffee-api:
     <<: *default
-    image: coffee-api
-    container_name: coffee-api
+    image: coffee-api:${TAG}
+    container_name: coffee-api-${TAG}
+    environment:
+      <<: *default_env
+      API_PORT: ${API_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: mysql-server-${TAG}
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME}
     ports:
-      - "9600:9600"
-    env_file: "coffee_api/api.env"
+      - "${API_PORT}:80"
     networks:
-      - coffee_network
+      - backend
     volumes:
       - ${CONFIG_DIR}/coffee-api:/config
+    depends_on:
+      mysql-server:
+        condition: service_healthy
 
 networks:
-  coffee_network:
+  backend:
+    name: coffee_network_${TAG}
     driver: bridge
