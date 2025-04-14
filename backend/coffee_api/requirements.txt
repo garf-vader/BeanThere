@@ -5,3 +5,4 @@ SQLAlchemy==2.0.40
 uvicorn==0.34.0
 pymysql==1.1.1
 cryptography==44.0.2
+email-validator==2.2.0
