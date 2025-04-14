@@ -1,12 +1,15 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
-
-# Pydantic model for Cafe
 class CafeCreate(BaseModel):
     name: str
     location: Optional[str] = None
 
-    class Config:
-        from_attributes = True  # Allows Pydantic to work with SQLAlchemy models
+    model_config = ConfigDict(from_attributes=True)
+
+class CafeUpdate(BaseModel):
+    name: Optional[str] = None
+    location: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
