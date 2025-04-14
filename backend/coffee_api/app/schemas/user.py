@@ -1,18 +1,24 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, EmailStr
 
+class UserBase(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
 
 # Pydantic model for User
-class UserCreate(BaseModel):
+class UserCreate(UserBase):
     username: str
-    email: str
+    email: EmailStr
+    password: str
 
-    class Config:
-        from_attributes = True  # Allows Pydantic to work with SQLAlchemy models
-
+class UserUpdate(UserBase):
+    password: Optional[str] = None
 
 # Seperation of concerns, keep hashed password seperate
-# Represents the data stored in the database, including sensitive fields
-class UserInDB(UserCreate):
+class UserInDB(UserBase):
     hashed_password: str
+
+class UserOut(UserBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
