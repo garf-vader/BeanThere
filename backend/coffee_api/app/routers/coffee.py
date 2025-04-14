@@ -8,8 +8,8 @@ from typing import Optional
 ####### Internal Imports
 
 from app.models.coffee import CoffeeReview
-from app.crud.coffee import get_review, create_review
-from app.schemas.coffee import CoffeeReviewCreate
+from app.crud.coffee import coffee_crud
+from app.schemas.coffee import CoffeeReviewCreate, CoffeeReviewUpdate
 from app.database import get_db
 
 #######
@@ -22,12 +22,12 @@ async def create_review_endpoint(
     review: CoffeeReviewCreate,
     db: Session = Depends(get_db),
 ):
-    return create_review(db, review)
+    return coffee_crud.create(db, review)
 
 
 @router.get("/reviews/{review_id}")
 async def get_review_endpoint(review_id: int, db: Session = Depends(get_db)):
-    review = get_review(db, review_id)
+    review = coffee_crud.get(db, review_id)
     if review is None:
         raise HTTPException(status_code=404, detail="Review not found")
     return review
@@ -35,36 +35,16 @@ async def get_review_endpoint(review_id: int, db: Session = Depends(get_db)):
 
 @router.put("/reviews/{review_id}")
 async def update_review_endpoint(
-    review_id: int,
-    drinkType: str,
-    roastDarkness: int,
-    tasteRating: int,
-    price: float,
-    notes: Optional[str] = None,
-    db: Session = Depends(get_db),
+    review: CoffeeReviewUpdate,
+    db: Session = Depends(get_db)
 ):
-    review = db.query(CoffeeReview).filter(CoffeeReview.id == review_id).first()
-    if review is None:
-        raise HTTPException(status_code=404, detail="Review not found")
-
-    review.drinkType = drinkType
-    review.roastDarkness = roastDarkness
-    review.tasteRating = tasteRating
-    review.price = price
-    review.notes = notes
-    db.commit()
-    db.refresh(review)
+    coffee_crud.update(db, review)
 
     return review
 
 
 @router.delete("/reviews/{review_id}")
 async def delete_review_endpoint(review_id: int, db: Session = Depends(get_db)):
-    review = db.query(CoffeeReview).filter(CoffeeReview.id == review_id).first()
-    if review is None:
-        raise HTTPException(status_code=404, detail="Review not found")
-
-    db.delete(review)
-    db.commit()
+    coffee_crud.delete_by_id(db, review_id)
 
     return {"detail": "Review deleted"}
