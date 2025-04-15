@@ -13,6 +13,9 @@ class UserCreate(UserBase):
     password: str
 
 class UserUpdate(UserBase):
+    username: Optional[str] = None
+
+class UserNewPassword(UserBase):
     password: Optional[str] = None
 
 # Seperation of concerns, keep hashed password seperate
