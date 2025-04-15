@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from fastapi import HTTPException
 
-from app.database import Base
+from app.db.base_class import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)

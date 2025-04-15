@@ -6,3 +6,5 @@ uvicorn==0.34.0
 pymysql==1.1.1
 cryptography==44.0.2
 email-validator==2.2.0
+passlib==1.7.4
+bcrypt==4.3.0

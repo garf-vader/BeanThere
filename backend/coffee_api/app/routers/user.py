@@ -10,7 +10,7 @@ from typing import Optional
 from app.models.user import User
 #from app.crud.user import get_user, create_user
 from app.schemas.user import UserCreate
-from app.database import get_db
+from app.db.database import get_db
 
 #######
 

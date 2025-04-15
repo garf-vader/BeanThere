@@ -1,7 +1,7 @@
 # app/core.py
 import logging
 
-from app.database import init_db  # Function to initialize DB
+from app.db.database import init_db  # Function to initialize DB
 from app.routers import coffee  # Import routes
 from app.routers import cafe
 from app.routers import user
@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-app = FastAPI()
+app = FastAPI(title="CoffeeAPI", version="0.0.0")
 
 # Initialize database (this can be moved elsewhere if needed)
 init_db()
