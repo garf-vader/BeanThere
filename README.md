@@ -6,7 +6,13 @@ To work on:
 
 - Basic API
   - Coffee Review Creation (Complete)
-  - 
-- Account creation and Log-In
-- Cafe Scraping
-- Revent Reviews Page
+  - Basic User Account Creation (Complete)
+  - Creation and allocation of user tokens
+  - Review ownership based on use token
+
+- Other Backend
+  - Cafe Scraping
+
+- Frontend
+  - Login and Account Creation Page
+  - Recent Reviews Page
