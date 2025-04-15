@@ -17,7 +17,7 @@ class UserCRUD(CRUDBase[User, UserCreate, UserUpdate]):
         Prevents code reuse, and ensures uniformity
         """
         stmt = select(User).where(User.email == email)
-        return stmt.scalars(stmt).first()
+        return db.execute(stmt).scalars(stmt).first()
     
     def create(self, db: Session, obj_in: UserCreate) -> User:
         # Check if the email already exists in the database
