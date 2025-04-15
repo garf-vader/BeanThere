@@ -10,7 +10,7 @@ from typing import Optional
 from app.models.cafe import Cafe
 from app.crud.cafe import cafe_crud
 from app.schemas.cafe import CafeCreate, CafeUpdate
-from app.database import get_db
+from app.db.database import get_db
 
 #######
 
