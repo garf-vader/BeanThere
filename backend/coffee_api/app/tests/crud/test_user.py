@@ -31,28 +31,44 @@ def db():
     finally:
         session.close()
 
+
 class TestUserCRUD:
-    def test_create_user(self, db):
-        user_data = {
-            "username": "JoeBloggs",
-            "email": "joebloggs@email.com",
-            "password": "password123",
-        }
-        user_obj = UserCreate(**user_data)
+    @pytest.mark.parametrize(
+        "username, email, password",
+        [
+            ("JoeBloggs", "joebloggs@email.com", "password123"),
+            ("JaneDoe", "janedoe@email.com", "password456"),
+            ("Squidward", "squidward@email.com", "clarinet123"),
+        ],
+    )
+    def test_create_user(self, db, username, email, password):
+        user_obj = UserCreate(username=username, email=email, password=password)
         user = user_crud.create(db, user_obj)
         assert user.id is not None
-        assert user.email == "joebloggs@email.com"
+        assert user.email == email
         assert user.hashed_password != None
 
-    def test_create_user_existing_email(self, db):
-        user_data = {
-            "username": "BobHoskins",
-            "email": "joebloggs@email.com",
-            "password": "randomString",
-        }
-        user_obj = UserCreate(**user_data)
+    @pytest.mark.parametrize(
+        "existing_user, duplicate_user",
+        [
+            (
+                {
+                    "username": "Original",
+                    "email": "duplicate@email.com",
+                    "password": "pass123",
+                },
+                {
+                    "username": "Copy",
+                    "email": "duplicate@email.com",
+                    "password": "pass456",
+                },
+            ),
+        ],
+    )
+    def test_create_user_existing_email(self, db, existing_user, duplicate_user):
+        user_crud.create(db, UserCreate(**existing_user))
         with pytest.raises(HTTPException) as exc_info:
-            user = user_crud.create(db, user_obj)
+            user_crud.create(db, UserCreate(**duplicate_user))
         assert exc_info.value.status_code == 400
 
     def test_get_user(self, db):
@@ -60,33 +76,34 @@ class TestUserCRUD:
         assert user is not None
         assert user.id == 1
 
-    def test_get_by_email(self, db):
-        user_data = {
-            "username": "TestName",
-            "email": "testemail@email.com",
-            "password": "password123",
-        }
-        user_obj = UserCreate(**user_data)
+    @pytest.mark.parametrize(
+        "username, email",
+        [
+            ("EmailLookup", "emailtest1@email.com"),
+            ("AnotherLookup", "emailtest2@email.com"),
+        ],
+    )
+    def test_get_by_email(self, db, username, email):
+        user_obj = UserCreate(username=username, email=email, password="lookupPass")
         user_crud.create(db, user_obj)
-        user = user_crud.get_by_email(db, "testemail@email.com")
+        user = user_crud.get_by_email(db, email)
         assert user is not None
-        assert user.username == "TestName"
+        assert user.username == username
 
-    def test_get_multi_users(self, db):
-        user_data_1 = {
-            "username": "JaneDoe",
-            "email": "janedoe@email.com",
-            "password": "password456",
-        }
-        user_data_2 = {
-            "username": "Squidward",
-            "email": "squidwardtentacles@email.com",
-            "password": "password789",
-        }
-        user_obj1 = UserCreate(**user_data_1)
-        user_obj2 = UserCreate(**user_data_2)
-        user_crud.create(db, user_obj1)
-        user_crud.create(db, user_obj2)
+    # strictly speaking this isnt needed, but useful 
+    # if I decide to run each test in an isolated DB
+    @pytest.mark.parametrize( 
+        "users_data",
+        [
+            [
+                {"username": "User1", "email": "user1@email.com", "password": "pass1"},
+                {"username": "User2", "email": "user2@email.com", "password": "pass2"},
+            ],
+        ],
+    )
+    def test_get_multi_users(self, db, users_data):
+        for data in users_data:
+            user_crud.create(db, UserCreate(**data))
         users = user_crud.get_multi(db)
         assert isinstance(users, list)
         assert len(users) >= 1
@@ -113,7 +130,8 @@ class TestUserCRUD:
         assert deleted.id == 1
         assert user_crud.get(db, 1) is None
 
-    def test_delete_by_id_not_found(self, db):
+    @pytest.mark.parametrize("nonexistent_id", [999, 1000])
+    def test_delete_by_id_not_found(self, db, nonexistent_id):
         with pytest.raises(HTTPException) as exc_info:
-            user_crud.delete_by_id(db, 999)
+            user_crud.delete_by_id(db, nonexistent_id)
         assert exc_info.value.status_code == 404
