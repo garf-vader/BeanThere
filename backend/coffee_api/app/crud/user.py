@@ -10,7 +10,7 @@ from app.security import Hasher
 from fastapi import HTTPException
 
 class UserCRUD(CRUDBase[User, UserCreate, UserUpdate]):
-    def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
+    def get_by_email(self, db: Session, email: str) -> Optional[User]:
         """
         Simple function to retrieve user by email address
 
@@ -19,7 +19,7 @@ class UserCRUD(CRUDBase[User, UserCreate, UserUpdate]):
         stmt = select(User).where(User.email == email)
         return stmt.scalars(stmt).first()
     
-    def create(self, db: Session, *, obj_in: UserCreate) -> User:
+    def create(self, db: Session, obj_in: UserCreate) -> User:
         # Check if the email already exists in the database
         existing_user = self.get_by_email(db=db, email=obj_in.email)
         if existing_user:
