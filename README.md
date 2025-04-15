@@ -12,6 +12,11 @@ App to review and track Coffees bought at Cafes, like Vivino and TripAdvisor com
 
 - Other Backend
   - Cafe Scraping
+  - Add Alembic for db migrations
+  - Add data analytics features
+    - Average cost of coffee
+    - Average rating of store
+    - Basic Regression on variables to determine users "taste profile"
 
 - Frontend
   - Login and Account Creation Page
