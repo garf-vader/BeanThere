@@ -6,9 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.crud.coffee import coffee_crud
-from app.models.coffee import CoffeeReview
 from app.schemas.coffee import CoffeeReviewCreate, CoffeeReviewUpdate
 from app.db.base_class import Base
+
+from app.models import CoffeeReview, Cafe, User
 
 from fastapi import HTTPException
 
