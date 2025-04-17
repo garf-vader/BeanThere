@@ -22,25 +22,27 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(bind=engine)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def db():
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()
     try:
         yield session
     finally:
+        session.rollback()
         session.close()
 
 
-class TestUserCRUD:
-    @pytest.mark.parametrize(
-        "username, email, password",
-        [
-            ("JoeBloggs", "joebloggs@email.com", "password123"),
-            ("JaneDoe", "janedoe@email.com", "password456"),
-            ("Squidward", "squidward@email.com", "clarinet123"),
-        ],
-    )
+@pytest.mark.parametrize(
+    "username, email, password",
+    [
+        ("JoeBloggs", "joebloggs@email.com", "password123"),
+        ("JaneDoe", "janedoe@email.com", "password456"),
+        ("Squidward", "squidward@email.com", "clarinet123"),
+    ],
+)
+class TestUserCreation:
     def test_create_user(self, db, username, email, password):
         user_obj = UserCreate(username=username, email=email, password=password)
         user = user_crud.create(db, user_obj)
@@ -48,28 +50,25 @@ class TestUserCRUD:
         assert user.email == email
         assert user.hashed_password != None
 
-    @pytest.mark.parametrize(
-        "existing_user, duplicate_user",
-        [
-            (
-                {
-                    "username": "Original",
-                    "email": "duplicate@email.com",
-                    "password": "pass123",
-                },
-                {
-                    "username": "Copy",
-                    "email": "duplicate@email.com",
-                    "password": "pass456",
-                },
-            ),
-        ],
-    )
-    def test_create_user_existing_email(self, db, existing_user, duplicate_user):
-        user_crud.create(db, UserCreate(**existing_user))
+    def test_create_user_existing_email(self, db, username, email, password):
+        user_obj = UserCreate(username=username, email=email, password=password)
+        user = user_crud.create(db, user_obj)
         with pytest.raises(HTTPException) as exc_info:
-            user_crud.create(db, UserCreate(**duplicate_user))
+            duplicate_data = UserCreate(username="Copy", email=email, password="Copy")
+            user_crud.create(db, duplicate_data)
         assert exc_info.value.status_code == 400
+
+
+class TestUserCRUDWithPrepopulatedDB:
+    @pytest.fixture(autouse=True)
+    def create_users(self, db):
+        users_data = [
+            {"username": "alice", "email": "alice@email.com", "password": "password1"},
+            {"username": "bob", "email": "bob@email.com", "password": "password2"},
+            {"username": "carol", "email": "carol@email.com", "password": "password3"},
+        ]
+        for data in users_data:
+            user = user_crud.create(db, UserCreate(**data))
 
     def test_get_user(self, db):
         user = user_crud.get(db, 1)
@@ -79,31 +78,17 @@ class TestUserCRUD:
     @pytest.mark.parametrize(
         "username, email",
         [
-            ("EmailLookup", "emailtest1@email.com"),
-            ("AnotherLookup", "emailtest2@email.com"),
+            ("alice", "alice@email.com"),
+            ("bob", "bob@email.com"),
+            ("carol", "carol@email.com"),
         ],
     )
     def test_get_by_email(self, db, username, email):
-        user_obj = UserCreate(username=username, email=email, password="lookupPass")
-        user_crud.create(db, user_obj)
         user = user_crud.get_by_email(db, email)
         assert user is not None
         assert user.username == username
 
-    # strictly speaking this isnt needed, but useful 
-    # if I decide to run each test in an isolated DB
-    @pytest.mark.parametrize( 
-        "users_data",
-        [
-            [
-                {"username": "User1", "email": "user1@email.com", "password": "pass1"},
-                {"username": "User2", "email": "user2@email.com", "password": "pass2"},
-            ],
-        ],
-    )
-    def test_get_multi_users(self, db, users_data):
-        for data in users_data:
-            user_crud.create(db, UserCreate(**data))
+    def test_get_multi_users(self, db):
         users = user_crud.get_multi(db)
         assert isinstance(users, list)
         assert len(users) >= 1
@@ -135,3 +120,36 @@ class TestUserCRUD:
         with pytest.raises(HTTPException) as exc_info:
             user_crud.delete_by_id(db, nonexistent_id)
         assert exc_info.value.status_code == 404
+
+
+@pytest.mark.parametrize(
+    "username, email, password",
+    [
+        ("AlfaBravo", "ab@email.com", "pass1"),
+        ("CharlieDelta", "cd@email.com", "pass2"),
+        ("EchoFoxtrot", "ef@email.com", "pass3"),
+    ],
+)
+class TestUserAuthentication:
+    def test_authenticate_login(self, db, username, email, password):
+        user_obj = UserCreate(username=username, email=email, password=password)
+        user = user_crud.create(db, user_obj)
+        auth_user = user_crud.authenticate_login(db, email=email, password=password)
+        assert auth_user is not None
+        assert auth_user.username == username
+        assert auth_user.email == email
+        assert auth_user.hashed_password == user.hashed_password
+
+    def test_authenticate_login_email_failure(self, db, username, email, password):
+        user_obj = UserCreate(username=username, email=email, password=password)
+        user = user_crud.create(db, user_obj)
+        auth_user = user_crud.authenticate_login(
+            db, email="wrongemail@email.com", password=password
+        )
+        assert auth_user is None
+
+    def test_authenticate_login_wrong_password(self, db, username, email, password):
+        user_obj = UserCreate(username=username, email=email, password="wrongPassword")
+        user = user_crud.create(db, user_obj)
+        auth_user = user_crud.authenticate_login(db, email=email, password=password)
+        assert auth_user is None
