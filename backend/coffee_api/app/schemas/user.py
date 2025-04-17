@@ -21,6 +21,7 @@ class UserNewPassword(UserBase):
 # Seperation of concerns, keep hashed password seperate
 class UserInDB(UserBase):
     hashed_password: str
+    model_config = ConfigDict(from_attributes=True)
 
 class UserOut(UserBase):
     id: int
