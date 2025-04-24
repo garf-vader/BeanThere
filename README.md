@@ -33,7 +33,7 @@ BeanThere is a full-stack application designed to help users log and rate their 
 - [**SQLAlchemy**](https://www.sqlalchemy.org/): ORM for database interactions.
 - [**Pydantic**](https://docs.pydantic.dev): Data parsing and validation.
 - [**MySQL**](https://www.mysql.com/): Relational database.
-- --[**Alembic**](https://alembic.sqlalchemy.org/): Database migrations.--
+- PLANNED -- [**Alembic**](https://alembic.sqlalchemy.org/): Database migrations.
 - [**Pytest**](https://pytest.org): For automated backend testing.
 - 🔐 **Authentication**: Secure password hashing via bcrypt and JWT for user authentication.
 
