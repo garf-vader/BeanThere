@@ -1,36 +1,63 @@
 # BeanThere
-App to review and track Coffees bought at Cafes, like Vivino and TripAdvisor combined
 
+Welcome to **BeanThere**, your personal coffee companion! Inspired by platforms like Vivino and TripAdvisor, BeanThere lets users review, track, and discover coffees at local cafes. Whether you're a casual sipper or a seasoned aficionado, BeanThere helps you build your taste profile and find the brews you'll love most.
 
-  ## Project Outliner and Intended Features
+## Project Overview
 
-- Basic API
-  - Coffee Review Creation (Complete)
-  - Basic User Account Creation (Complete)
-  - Creation and allocation of user tokens
-  - Review ownership based on use token
+BeanThere is a full-stack application designed to help users log and rate their coffee experiences. It features a modern API backend built with FastAPI and an admittedly incomplete mobile frontend developed in Kotlin (with plans for Flutter), offering smooth and secure interactions. From tracking flavor preferences to discovering the best-rated cafes nearby, BeanThere puts your coffee journey front and center.
 
-- Other Backend
-  - Cafe Scraping
-  - Add Alembic for db migrations
-  - Add data analytics features
-    - Average cost of coffee
-    - Average rating of store
-    - Basic Regression on variables to determine users "taste profile"
+## Features
 
-- Frontend
-  - Login and Account Creation Page
-  - Recent Reviews Page
+### ✅ Backend Features
 
-  ## Technology Stack and Features
+- **Review System**: Create, update, and manage coffee reviews.
+- **User Accounts**: Sign-up and login functionality with secure authentication.
+- **Token-Based Ownership**: Assign reviews to users via JWTs.
+- **Cafe Data**: Future integration for automatic scraping of local cafe listings.
 
--  [**FastAPI**](https://fastapi.tiangolo.com) Python backend API.
-    -  [SQLAlchemy](https://www.sqlalchemy.org/) Python SQL database interactions (ORM).
-    -  [Pydantic](https://docs.pydantic.dev), for the data validation.
-    -  [MySQL](https://www.mysql.com/) as the SQL database.
--  [Kotlin](https://kotlinlang.org/) for the Android frontend.
-    -  Might migrate to flutter to allow simultaneous development for Android and IOS
-- 🐋 [Docker Compose](https://www.docker.com) for development and production.
-- 🔒 Secure password hashing by default. (bcrypt)
-- 🔑 JWT (JSON Web Token) authentication. OR 
--  Tests with [Pytest](https://pytest.org).
+### 📊 Data Analytics (Planned)
+
+- **Taste Profiling**: Use regression analysis to suggest coffees based on user preferences.
+- **Aggregate Metrics**: Visual insights like average coffee prices and cafe ratings.
+
+### 🎨 Frontend Features (Planned)
+
+- **Login & Registration**: Intuitive account creation and authentication.
+- **Review Feed**: Explore the latest user reviews in a dedicated feed.
+
+## Technology Stack
+
+### 🔧 Backend
+
+- [**FastAPI**](https://fastapi.tiangolo.com): High-performance web framework for the API.
+- [**SQLAlchemy**](https://www.sqlalchemy.org/): ORM for database interactions.
+- [**Pydantic**](https://docs.pydantic.dev): Data parsing and validation.
+- [**MySQL**](https://www.mysql.com/): Relational database.
+- --[**Alembic**](https://alembic.sqlalchemy.org/): Database migrations.--
+- [**Pytest**](https://pytest.org): For automated backend testing.
+- 🔐 **Authentication**: Secure password hashing via bcrypt and JWT for user authentication.
+
+### 📱 Frontend
+
+- [**Kotlin**](https://kotlinlang.org/): For Android app development.
+- _Planned_: Migration to **Flutter** for cross-platform Android and iOS support.
+
+### 🐳 DevOps
+
+- [**Docker Compose**](https://docs.docker.com/compose/): Containerized development and deployment.
+
+## TODO
+
+- 🧠 **Analytics**: Implement taste profiling and recommendation engine.
+- 🌍 **Scraping**: Automate the collection of local cafe data.
+- 🔧 **Frontend**: Complete development of UI components.
+- 🧪 **Testing**: Expand test coverage for edge cases and performance.
+- 🧳 **Migrations**: Integrate Alembic for scalable DB changes.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.9+
+- MySQL database setup
+- Docker (optional but recommended)
