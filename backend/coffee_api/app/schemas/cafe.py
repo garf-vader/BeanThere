@@ -4,12 +4,14 @@ from pydantic import BaseModel, ConfigDict
 
 class CafeCreate(BaseModel):
     name: str
-    location: Optional[str] = None
+    latitude: float
+    longitude: float
 
     model_config = ConfigDict(from_attributes=True)
 
 class CafeUpdate(BaseModel):
     name: Optional[str] = None
-    location: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
