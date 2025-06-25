@@ -3,13 +3,12 @@
 
 from typing import Generic, TypeVar, Type, Optional, List
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.declarative import DeclarativeMeta
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import Sequence, select
 from fastapi import HTTPException
 
-from app.db.base_class import Base
-
-ModelType = TypeVar("ModelType", bound=BaseModel)
+ModelType = TypeVar("ModelType", bound=DeclarativeMeta)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
@@ -32,10 +31,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def get_multi(
         self, db: Session, skip: int = 0, limit: int = 5000
-    ) -> List[ModelType]:
+    ) -> list[ModelType]:
         stmt = select(self.model).offset(skip).limit(limit)
         return db.execute(stmt).scalars().all()
-    
+
     def _preprocess_input(self, data: dict) -> dict:
         """Override this in subclasses to modify data before create/update."""
         return data
