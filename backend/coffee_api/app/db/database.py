@@ -7,8 +7,8 @@ from app.db.base_class import Base
 #load_dotenv()  # Loads .env file into environment variables
 
 # Database connection details
-dialect = "mysql"
-driver = "pymysql"
+dialect = "postgresql"
+driver = "psycopg2"
 username = os.getenv("DB_USER")
 password = os.getenv("DB_PASSWORD")
 hostname = os.getenv("DB_HOST")

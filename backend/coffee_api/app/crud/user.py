@@ -49,5 +49,16 @@ class UserCRUD(CRUDBase[User, UserCreate, UserUpdate]):
         db.commit()
         db.refresh(db_obj)
         return db_obj
+    
+    def authenticate_login(self, db: Session, email: str, password: str) -> Optional[UserInDB]:
+        """
+        Authenticate a user by email and password
+        """
+        user = self.get_by_email(db=db, email=email)
+        if not user:
+            return None
+        if not Hasher.verify_password(password, user.hashed_password):
+            return None
+        return UserInDB.model_validate(user)
 
 user_crud = UserCRUD(model=User)
