@@ -1,9 +1,9 @@
 # tests/crud/
 import pytest
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.pool import StaticPool, NullPool
 
 from app.crud.user import user_crud
 from app.schemas.user import UserCreate, UserUpdate, UserNewPassword
@@ -13,25 +13,31 @@ from app.models import CoffeeReview, Cafe, User
 
 from fastapi import HTTPException
 
-# Setup in-memory SQLite test database
-engine = create_engine(
-    "sqlite:///:memory:",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-TestingSessionLocal = sessionmaker(bind=engine)
 
-
+# This will automatically start and stop a PostgreSQL container for tests
 @pytest.fixture(scope="function")
-def db():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-    session = TestingSessionLocal()
-    try:
-        yield session
-    finally:
-        session.rollback()
-        session.close()
+def db(postgresql):
+    """Create a clean database session for a test."""
+    connection_url = (
+        f"postgresql+psycopg2://{postgresql.info.user}:@{postgresql.info.host}:"
+        f"{postgresql.info.port}/{postgresql.info.dbname}"
+    )
+
+    engine = create_engine(connection_url, echo=False, poolclass=NullPool)
+
+    with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+
+    Base.metadata.create_all(engine)
+
+    Session = scoped_session(sessionmaker(bind=engine))
+    session = Session()
+
+    yield session  # Provide the test with a usable session
+
+    session.close()
+    Session.remove()
+    Base.metadata.drop_all(engine)
 
 
 @pytest.mark.parametrize(
@@ -68,7 +74,7 @@ class TestUserCRUDWithPrepopulatedDB:
             {"username": "carol", "email": "carol@email.com", "password": "password3"},
         ]
         for data in users_data:
-            user = user_crud.create(db, UserCreate(**data))
+            user_crud.create(db, UserCreate(**data))
 
     def test_get_user(self, db):
         user = user_crud.get(db, 1)
@@ -95,6 +101,7 @@ class TestUserCRUDWithPrepopulatedDB:
 
     def test_new_password(self, db):
         user = user_crud.get(db, 1)
+        assert user is not None
         old_password = user.hashed_password
         update_in = UserNewPassword(password="different_password")
         updated = user_crud.new_password(db, user, update_in)
@@ -103,6 +110,7 @@ class TestUserCRUDWithPrepopulatedDB:
 
     def test_update_user(self, db):
         user = user_crud.get(db, 1)
+        assert user is not None
         old_username = user.username
         update_in = UserUpdate(username="newUsername")
         updated = user_crud.update(db, user, update_in)
@@ -111,6 +119,7 @@ class TestUserCRUDWithPrepopulatedDB:
 
     def test_delete_user(self, db):
         user = user_crud.get(db, 1)
+        assert user is not None
         deleted = user_crud.delete(db, user)
         assert deleted.id == 1
         assert user_crud.get(db, 1) is None
